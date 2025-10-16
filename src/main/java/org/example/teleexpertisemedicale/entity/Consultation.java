@@ -3,149 +3,117 @@ package org.example.teleexpertisemedicale.entity;
 import jakarta.persistence.*;
 import org.example.teleexpertisemedicale.enums.StatutConsultation;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
-@Table(name = "consultations")
 public class Consultation {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(name = "date_consultation", nullable = false)
-    private LocalDateTime dateConsultation;
-    
-    @Column(columnDefinition = "TEXT")
-    private String diagnostic;
-    
-    @Column(columnDefinition = "TEXT")
-    private String prescription;
-    
-    @Column(columnDefinition = "TEXT")
-    private String observations;
-    
+    @GeneratedValue
+    private UUID id;
+
+    private String raison;
+    private String observation;
+    private double prix = 150.00;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private StatutConsultation statut;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false)
+
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    private MedecinGeneraliste medecinGeneraliste;
+
+    @ManyToOne
     private Patient patient;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medecin_id")
-    private MedecinGeneraliste medecin;
-    
-    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ActeTechnique> actesTechniques = new ArrayList<>();
-    
-    // Constructeurs
-    public Consultation() {
-        this.dateConsultation = LocalDateTime.now();
-        this.statut = StatutConsultation.EN_ATTENTE;
+
+    @ManyToMany
+    @JoinTable(
+            name = "consultation_acte",
+            joinColumns = @JoinColumn(name = "consultation_id"),
+            inverseJoinColumns = @JoinColumn(name = "acte_id")
+    )
+    private Set<ActeTechnique> actes = new HashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        statut = StatutConsultation.EN_ATTENTE_AVIS;
     }
-    
-    public Consultation(Patient patient, MedecinGeneraliste medecin) {
-        this();
-        this.patient = patient;
-        this.medecin = medecin;
-    }
-    
-    // Méthode pour calculer le coût total de la consultation
-    public double calculerCoutTotal() {
-        return actesTechniques.stream()
-                .mapToDouble(ActeTechnique::getPrix)
-                .sum();
-    }
-    
-    // Getters et Setters
-    public Long getId() {
+
+    // Getters & Setters
+
+    public UUID getId() {
         return id;
     }
-    
-    public void setId(Long id) {
+
+    public void setId(UUID id) {
         this.id = id;
     }
-    
-    public LocalDateTime getDateConsultation() {
-        return dateConsultation;
+
+    public String getRaison() {
+        return raison;
     }
-    
-    public void setDateConsultation(LocalDateTime dateConsultation) {
-        this.dateConsultation = dateConsultation;
+
+    public void setRaison(String raison) {
+        this.raison = raison;
     }
-    
-    public String getDiagnostic() {
-        return diagnostic;
+
+    public String getObservation() {
+        return observation;
     }
-    
-    public void setDiagnostic(String diagnostic) {
-        this.diagnostic = diagnostic;
+
+    public void setObservation(String observation) {
+        this.observation = observation;
     }
-    
-    public String getPrescription() {
-        return prescription;
+
+    public double getPrix() {
+        return prix;
     }
-    
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
+
+    public void setPrix(double prix) {
+        this.prix = prix;
     }
-    
-    public String getObservations() {
-        return observations;
-    }
-    
-    public void setObservations(String observations) {
-        this.observations = observations;
-    }
-    
+
     public StatutConsultation getStatut() {
         return statut;
     }
-    
+
     public void setStatut(StatutConsultation statut) {
         this.statut = statut;
     }
-    
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public MedecinGeneraliste getMedecinGeneraliste() {
+        return medecinGeneraliste;
+    }
+
+    public void setMedecinGeneraliste(MedecinGeneraliste medecinGeneraliste) {
+        this.medecinGeneraliste = medecinGeneraliste;
+    }
+
     public Patient getPatient() {
         return patient;
     }
-    
+
     public void setPatient(Patient patient) {
         this.patient = patient;
     }
-    
-    public MedecinGeneraliste getMedecin() {
-        return medecin;
+
+    public Set<ActeTechnique> getActes() {
+        return actes;
     }
-    
-    public void setMedecin(MedecinGeneraliste medecin) {
-        this.medecin = medecin;
-    }
-    
-    public List<ActeTechnique> getActesTechniques() {
-        return actesTechniques;
-    }
-    
-    public void setActesTechniques(List<ActeTechnique> actesTechniques) {
-        this.actesTechniques = actesTechniques;
-    }
-    
-    // Méthode pour ajouter un acte technique
-    public void addActeTechnique(ActeTechnique acte) {
-        actesTechniques.add(acte);
-        acte.setConsultation(this);
-    }
-    
-    @Override
-    public String toString() {
-        return "Consultation{" +
-                "id=" + id +
-                ", dateConsultation=" + dateConsultation +
-                ", statut=" + statut +
-                '}';
+
+    public void setActes(Set<ActeTechnique> actes) {
+        this.actes = actes;
     }
 }

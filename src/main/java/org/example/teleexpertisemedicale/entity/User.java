@@ -25,25 +25,12 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User() {
-    }
-
-    public User(String nom, String prenom, String email, String password, LocalDate dateNaissance, String carte, String telephone, Role role) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.email = email;
-        this.password = password;
-        this.dateNaissance = dateNaissance;
-        this.carte = carte;
-        this.telephone = telephone;
-        this.role = role;
-    }
-
     public boolean login(String email, String password) {
         return this.email.equals(email) && this.password.equals(password);
     }
 
-    // Getters et Setters
+    // --- Getters & Setters ---
+
 
     public UUID getId() {
         return id;
