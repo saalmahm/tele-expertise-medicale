@@ -4,11 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-/**
- * Classe utilitaire pour gérer les connexions Hibernate
- * EntityManager: Interface pour interagir avec la base de données (CRUD)
- * EntityManagerFactory: Crée des EntityManager (coûteux à créer, donc singleton)
- */
 public class HibernateUtil {
     
     // Singleton: Une seule instance pour toute l'application
