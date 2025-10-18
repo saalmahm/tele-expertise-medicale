@@ -66,9 +66,6 @@
         <artifactId>postgresql</artifactId>
         <version>42.7.3</version>
     </dependency>
-
-    <!-- SUPPRIMEZ: glassfish.jaxb -->
-    <!-- SUPPRIMEZ: junit si vous ne testez pas -->
 </dependencies>
 
 <build>
