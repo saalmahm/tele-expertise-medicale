@@ -2,49 +2,74 @@ package org.example.teleexpertisemedicale.entity;
 
 import jakarta.persistence.*;
 import org.example.teleexpertisemedicale.enums.StatutConsultation;
+import org.example.teleexpertisemedicale.enums.TypeActe;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 public class Consultation {
-
     @Id
     @GeneratedValue
     private UUID id;
 
     private String raison;
     private String observation;
-    private double prix = 150.00;
+    
+    @Column(name = "prix_consultation")
+    private double prixConsultation = 150.0;
+
+    @Column(name = "prix_total")
+    private double prixTotal;
+    
+    @Column(name = "besoin_avis_expertise")
+    private boolean besoinAvisExpertise = false;
+
+    @ElementCollection
+    @CollectionTable(name = "consultation_actes", joinColumns = @JoinColumn(name = "consultation_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "acte_type")
+    private List<TypeActe> actes = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private StatutConsultation statut;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ManyToOne
-    private MedecinGeneraliste medecinGeneraliste;
-
+    // Relations
     @ManyToOne
     private Patient patient;
 
-    @ManyToMany
-    @JoinTable(
-            name = "consultation_acte",
-            joinColumns = @JoinColumn(name = "consultation_id"),
-            inverseJoinColumns = @JoinColumn(name = "acte_id")
-    )
-    private Set<ActeTechnique> actes = new HashSet<>();
+    @ManyToOne
+    private MedecinGeneraliste medecin;
 
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-        statut = StatutConsultation.EN_ATTENTE_AVIS;
+    // Constructeur
+    public Consultation() {
+        this.statut = null;
+    }
+
+    // Méthodes métier
+    public void terminer() {
+        this.statut = StatutConsultation.TERMINEE;
+    }
+
+    public void demanderAvisSpecialiste() {
+        this.statut = StatutConsultation.EN_ATTENTE_AVIS_SPECIALISTE;
+    }
+    
+    /**
+     * Calculer le prix total : consultation + actes
+     */
+    public void calculerPrixTotal() {
+        double total = this.prixConsultation;
+        for (TypeActe acte : actes) {
+            total += acte.getPrix();
+        }
+        this.prixTotal = total;
     }
 
     // Getters & Setters
-
     public UUID getId() {
         return id;
     }
@@ -69,12 +94,36 @@ public class Consultation {
         this.observation = observation;
     }
 
-    public double getPrix() {
-        return prix;
+    public double getPrixConsultation() {
+        return prixConsultation;
     }
 
-    public void setPrix(double prix) {
-        this.prix = prix;
+    public void setPrixConsultation(double prixConsultation) {
+        this.prixConsultation = prixConsultation;
+    }
+
+    public double getPrixTotal() {
+        return prixTotal;
+    }
+
+    public void setPrixTotal(double prixTotal) {
+        this.prixTotal = prixTotal;
+    }
+
+    public boolean isBesoinAvisExpertise() {
+        return besoinAvisExpertise;
+    }
+
+    public void setBesoinAvisExpertise(boolean besoinAvisExpertise) {
+        this.besoinAvisExpertise = besoinAvisExpertise;
+    }
+
+    public List<TypeActe> getActes() {
+        return actes;
+    }
+
+    public void setActes(List<TypeActe> actes) {
+        this.actes = actes;
     }
 
     public StatutConsultation getStatut() {
@@ -93,14 +142,6 @@ public class Consultation {
         this.createdAt = createdAt;
     }
 
-    public MedecinGeneraliste getMedecinGeneraliste() {
-        return medecinGeneraliste;
-    }
-
-    public void setMedecinGeneraliste(MedecinGeneraliste medecinGeneraliste) {
-        this.medecinGeneraliste = medecinGeneraliste;
-    }
-
     public Patient getPatient() {
         return patient;
     }
@@ -109,11 +150,11 @@ public class Consultation {
         this.patient = patient;
     }
 
-    public Set<ActeTechnique> getActes() {
-        return actes;
+    public MedecinGeneraliste getMedecin() {
+        return medecin;
     }
 
-    public void setActes(Set<ActeTechnique> actes) {
-        this.actes = actes;
+    public void setMedecin(MedecinGeneraliste medecin) {
+        this.medecin = medecin;
     }
 }
