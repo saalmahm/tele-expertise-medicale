@@ -1,53 +1,37 @@
 package org.example.teleexpertisemedicale.entity;
 
 import jakarta.persistence.*;
-import org.example.teleexpertisemedicale.enums.StatutPatient;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
+import java.time.LocalDate;
 
 @Entity
 public class Patient {
-
     @Id
     @GeneratedValue
     private UUID id;
 
     private String nom;
     private String prenom;
-    private LocalDate dateNaissance;
     private String carte;
     private String telephone;
-
-    private double tension;
+    private LocalDate dateNaissance;
+    private String sexe;
+    // Données médicales
+    private String tension;
     private int frequenceCardiaque;
     private double temperature;
     private int frequenceRespiratoire;
     private double poids;
     private double taille;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // Statut simple
+    private boolean enAttente = true;
 
-    @Enumerated(EnumType.STRING)
-    private StatutPatient statut;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @ManyToOne
-    private Infirmier infirmier;
-
-    @OneToMany(mappedBy = "patient")
-    private List<Consultation> consultations;
-
-    // --- Constructeur ---
-    public Patient() {
-        this.createdAt = LocalDateTime.now();
-        this.statut = StatutPatient.EN_ATTENTE_AVIS;
-    }
-
-    // --- Getters & Setters ---
-
+    // Getters & setters
 
     public UUID getId() {
         return id;
@@ -73,14 +57,6 @@ public class Patient {
         this.prenom = prenom;
     }
 
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public void setDateNaissance(LocalDate dateNaissance) {
-        this.dateNaissance = dateNaissance;
-    }
-
     public String getCarte() {
         return carte;
     }
@@ -97,11 +73,27 @@ public class Patient {
         this.telephone = telephone;
     }
 
-    public double getTension() {
+    public LocalDate getDateNaissance() {
+        return dateNaissance;
+    }
+
+
+    public String getSexe() {
+        return sexe;
+    }
+
+    public void setSexe(String sexe) {
+        this.sexe = sexe;
+    }
+    public void setDateNaissance(LocalDate dateNaissance) {
+        this.dateNaissance = dateNaissance;
+    }
+
+    public String getTension() {
         return tension;
     }
 
-    public void setTension(double tension) {
+    public void setTension(String tension) {
         this.tension = tension;
     }
 
@@ -145,6 +137,14 @@ public class Patient {
         this.taille = taille;
     }
 
+    public boolean isEnAttente() {
+        return enAttente;
+    }
+
+    public void setEnAttente(boolean enAttente) {
+        this.enAttente = enAttente;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -159,29 +159,5 @@ public class Patient {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public StatutPatient getStatut() {
-        return statut;
-    }
-
-    public void setStatut(StatutPatient statut) {
-        this.statut = statut;
-    }
-
-    public Infirmier getInfirmier() {
-        return infirmier;
-    }
-
-    public void setInfirmier(Infirmier infirmier) {
-        this.infirmier = infirmier;
-    }
-
-    public List<Consultation> getConsultations() {
-        return consultations;
-    }
-
-    public void setConsultations(List<Consultation> consultations) {
-        this.consultations = consultations;
     }
 }
