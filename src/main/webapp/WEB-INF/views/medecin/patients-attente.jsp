@@ -12,16 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="${pageContext.request.contextPath}/">
-                <i class="fas fa-hospital"></i> Télé-Expertise Médicale
-            </a>
-            <span class="navbar-text text-white">
-                <i class="fas fa-user-md"></i> Module Médecin
-            </span>
-        </div>
-    </nav>
+    <jsp:include page="/WEB-INF/views/includes/navbar-medecin.jsp" />
     
     <div class="container mt-4">
         <h2><i class="fas fa-user-clock"></i> Patients en Attente</h2>
@@ -42,7 +33,7 @@
                             <table class="table table-hover">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>ID</th>
+                                        <th>N°</th>
                                         <th>Patient</th>
                                         <th>Date Naissance</th>
                                         <th>Contact</th>
@@ -51,21 +42,28 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="patient" items="${patients}">
+                                    <c:forEach var="patient" items="${patients}" varStatus="status">
                                         <tr>
-                                            <td><span class="badge bg-warning">#${patient.id}</span></td>
-                                            <td><strong>${patient.prenom} ${patient.nom}</strong></td>
                                             <td>
-                                                ${patient.dateNaissance} <!-- Affiche directement la LocalDate -->
+                                                <span class="badge ${status.index == 0 ? 'bg-danger' : 'bg-secondary'} fs-6">
+                                                    ${status.index + 1}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <strong>${patient.prenom} ${patient.nom}</strong>
+                                                ${status.index == 0 ? '<span class="badge bg-danger ms-2">PRIORITAIRE</span>' : ''}
+                                            </td>
+                                            <td>
+                                                ${patient.dateNaissance}
                                             </td>
                                             <td><i class="fas fa-phone"></i> ${patient.telephone}</td>
                                             <td>
-                                                ${patient.dateEnregistrement.toLocalTime()} <!-- Affiche uniquement l'heure -->
+                                                ${patient.createdAt.toLocalTime()}
                                             </td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/medecin/consulter-patient?id=${patient.id}" 
-                                                   class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-stethoscope"></i> Consulter
+                                                <a href="${pageContext.request.contextPath}/medecin/creer-consultation?patientId=${patient.id}" 
+                                                   class="btn btn-sm ${status.index == 0 ? 'btn-danger' : 'btn-primary'}">
+                                                    <i class="fas fa-stethoscope"></i> ${status.index == 0 ? 'Consulter en PRIORITÉ' : 'Consulter'}
                                                 </a>
                                             </td>
                                         </tr>
@@ -85,7 +83,7 @@
         </div>
         
         <div class="mt-4">
-            <a href="${pageContext.request.contextPath}/medecin" class="btn btn-outline-secondary">
+            <a href="${pageContext.request.contextPath}/medecin/accueil" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Retour
             </a>
         </div>
